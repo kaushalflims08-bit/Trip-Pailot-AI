@@ -1,0 +1,1660 @@
+BEGIN MASTER PROMPT — TRIPPILOT AI
+
+You are a senior full-stack engineer, product designer, motion designer, and accessibility specialist.
+
+Build a complete, production-quality, responsive web app called **TripPilot AI**: an AI-powered Indian travel planning, booking, live-safety, and automatic replanning app. It should feel like MakeMyTrip for flights, trains, buses, hotels, and packages, but with a Gemini-powered travel agent that plans trips, monitors them live, detects risks, and replans automatically during disruptions.
+
+Build a runnable app with a working end-to-end demo. Do not require any paid travel API.
+
+==================================================
+1. NON-NEGOTIABLE BUILD RULES
+==================================================
+
+- Use React 18 + TypeScript + Vite.
+- Use Tailwind CSS, Framer Motion, Zustand with persist middleware, React Router, Lucide React, react-markdown + remark-gfm, canvas-confetti, Leaflet + react-leaflet, and PWA support.
+- Use @google/genai for Gemini.
+- Use React Three Fiber, @react-three/drei, and three only for lightweight decorative 3D.
+- Use strict TypeScript. No `any` unless absolutely unavoidable.
+- Every page and every 3D canvas must be wrapped in an ErrorBoundary.
+- Lazy-load routes, heavy pages, maps, and all 3D scenes with React.lazy + Suspense.
+- No external 3D models, GLTF files, textures, or paid APIs.
+- Build all 3D visuals from primitive geometry: box, cylinder, cone, sphere, icosahedron, octahedron, extruded simple shapes, lines, and points.
+- Use meshStandardMaterial or meshBasicMaterial with flatShading.
+- Cap all R3F canvases at dpr={[1, 2]}.
+- Use frameloop="demand" for mostly static 3D scenes.
+- Dispose geometries/materials on unmount.
+- Pause 3D animation when the tab is hidden, a map/camera is active, or the user enables Reduce animations.
+- Never hardcode API keys.
+- Gemini API key must remain server-side. In Google AI Studio, read it from the server environment as GEMINI_API_KEY. Never expose it to the browser.
+- Optional secrets: GOOGLE_MAPS_API_KEY, GOOGLE_CLIENT_ID, Firebase config.
+- Provide .env.example.
+- If Gemini, Google Maps, Firebase, OAuth, or geolocation is unavailable, the app must still work using realistic hardcoded Indian demo data.
+- Every AI-powered feature must have:
+  1. A typed Gemini request.
+  2. JSON response mode with a response schema.
+  3. Safe JSON parsing that strips markdown fences.
+  4. Zod or manual runtime validation.
+  5. An 8-second timeout.
+  6. One retry.
+  7. Skeleton loading state.
+  8. A realistic offline/demo fallback.
+  9. A visible “Demo data” badge when fallback is used.
+- Use Gemini model: gemini-2.5-flash.
+- Every Gemini prompt must include: “Respond in {selected language}.”
+- Use realistic Indian rupee pricing, Indian cities, railway stations, airports, travel durations, hotels, buses, trains, hospitals, police stations, weather, traffic, and expenses.
+- No TODOs, no placeholders, no “rest of the code here,” no truncated files.
+- Output every file completely.
+- At the end, print:
+  - Full folder structure
+  - Run instructions
+  - A 60-second judge demo script
+
+==================================================
+2. BRAND AND DESIGN SYSTEM — “AERO PREMIUM”
+==================================================
+
+Create a premium travel-tech design system.
+
+Colors:
+- Navy primary: #0B1F3A
+- Orange accent: #FF7A1A
+- Teal safe/success: #14B8A6
+- Amber warning: #F59E0B
+- Red danger/SOS: #EF4444
+- Light background: #F5F8FC
+- Dark background: #071427
+
+Typography:
+- Poppins for headings.
+- Inter for body text.
+- Noto Sans Tamil for Tamil.
+- Tamil text must use line-height 1.7, wrap correctly, and never overflow.
+- Add min-w-0 to flex children containing Tamil text.
+
+Visual style:
+- Glassmorphism cards.
+- backdrop-blur-xl.
+- 20px border radius.
+- 8px spacing grid.
+- Soft shadows.
+- Subtle navy-to-orange gradients.
+- Lucide icons only.
+- Mobile-first layout.
+- Bottom navigation on mobile.
+- Top navigation on desktop.
+- Persisted dark mode toggle.
+- Persisted language selector.
+- Persisted “Reduce animations” setting.
+- WCAG AA contrast.
+- Minimum 44px tap targets.
+- Visible focus rings.
+- aria-labels on all icon buttons.
+- Keyboard navigation.
+- prefers-reduced-motion support.
+
+Create these reusable components:
+GlassCard, Stepper, Button, Input, Select, Badge, Modal, MapView, NotificationBell, LanguageSelector, ThemeToggle, BudgetProgress, RiskScore, ItineraryTimeline, PackageCard, TravelerForm, SOSButton, VoiceAssistant, AssistantDrawer, AnimatedBackground, SkeletonLoader, AnimatedCounter, Confetti, PlaneFlyAcross, LowPolyIcon3D, DemoBadge, ErrorBoundary.
+
+==================================================
+3. GLOBAL STATE — ZUSTAND
+==================================================
+
+Create a typed Zustand store.
+
+Persisted state:
+- user
+- language
+- darkMode
+- reduceAnimations
+- tripDetails
+- selectedTripMode
+- selectedDestination
+- tripDuration
+- travelerCount
+- generatedItinerary
+- selectedPackage
+- travelers
+- booking
+- replanningHistory
+- expenses
+- notifications
+- trustedContacts, maximum 5
+- completedSteps
+- currentStep
+- tripStatus: not-started | active | finished
+
+Session-only state:
+- assistant: isOpen, messages, isLoading, voiceOutputEnabled, unreadAlert
+
+Trip details:
+- from
+- destination
+- startDate
+- endDate
+- travelers
+- budget
+- travelStyle
+- interests
+- transport
+- stayPreference
+- pace
+
+Add a loadDemoTrip() action that preloads:
+- From: Chennai
+- Destination: Ooty
+- Duration: 3 days
+- Travelers: 2
+- Budget: ₹15,000
+- Transport: Train + Road
+- Interests: Nature, tea estates, viewpoints, local food
+- Stay: Budget hotel/homestay
+- A complete 3-day itinerary
+- Package options
+- Expenses
+- Safety checklist
+- Packing list
+
+Demo mode must prefill data but still require the user to press Finish/Confirm at each step so the guided flow can be demonstrated.
+
+==================================================
+4. LANGUAGES — TAMIL IS FIRST-CLASS
+==================================================
+
+Support:
+- English
+- தமிழ்
+- Hindi
+- Telugu
+- Malayalam
+
+Use a typed dictionary and React Context or i18next.
+
+The entire UI must switch instantly without reload:
+- Navigation
+- Buttons
+- Labels
+- Forms
+- Validation errors
+- Notifications
+- Alerts
+- Trip modes
+- Destination names and descriptions
+- Emergency messages
+- Offline first-aid content
+- Assistant replies
+- SOS messages
+
+Provide complete English and Tamil dictionaries.
+
+Hindi, Telugu, and Malayalam must cover all primary UI strings:
+- Navigation
+- Buttons
+- Trip modes
+- Assistant
+- SOS
+- Status messages
+
+Examples:
+- “Plan your trip” → “உங்கள் பயணத்தைத் திட்டமிடுங்கள்”
+- “Family Trip” → “குடும்ப பயணம்”
+- “Start Sharing Live Location” → “நேரலை இருப்பிடத்தைப் பகிரத் தொடங்குங்கள்”
+- “Are you safe?” → “நீங்கள் பாதுகாப்பாக இருக்கிறீர்களா?”
+- “Booking successful” → “பதிவு வெற்றிகரமாக முடிந்தது”
+
+Keep technical terms such as GPS, Wi-Fi, ETA, and SOS in English.
+
+Language selector must appear in:
+- Splash
+- Login screen
+- Top navigation
+
+==================================================
+5. ROUTING AND APP FLOW
+==================================================
+
+Use React Router.
+
+Flow:
+1. Splash — once per browser session
+2. Login
+3. Main app
+
+If a user session exists in localStorage, skip Login.
+
+Routes:
+- `/` — main app
+- `/track/:id` — public read-only live-location tracking viewer
+
+The tracking page must:
+- Require no login
+- Show no app chrome
+- Display a moving map marker
+- Show last updated time and speed
+- Include “Open in Google Maps”
+- Use this link format:
+  https://www.google.com/maps/search/?api=1&query={lat},{lng}
+
+==================================================
+6. SPLASH SCREEN
+==================================================
+
+Duration: 3.5 seconds.
+Include a Skip button.
+Skip entirely if Reduce animations is enabled.
+
+Timeline:
+- 0.0s: dark navy background
+- 0.3s: glowing low-poly 3D Earth fades in and rotates
+- India highlighted in orange using a small orange mesh cluster at India’s approximate latitude/longitude
+- 0.8s: low-poly aeroplane flies in a curved arc around the globe, leaving an orange fading trail
+- 1.2s: glowing route arcs draw from Chennai to Delhi, Mumbai, and Kolkata using QuadraticBezierCurve3 and animated draw range
+- 1.8s: “TripPilot AI” logo scales up with a soft spring bounce and orange glow pulse
+- 2.4s: tagline fades in:
+  English: “Plan. Travel. Replan. Stay safe.”
+  Tamil: “திட்டமிடுங்கள். பயணியுங்கள். மறுதிட்டமிடுங்கள். பாதுகாப்பாக இருங்கள்.”
+- Progress bar fills
+- 3.5s: splash slides upward like a curtain using y: "-100%"
+
+Include a proper lat/lng-to-sphere-position helper.
+
+==================================================
+7. LOGIN AND ONBOARDING
+==================================================
+
+Create a cinematic login screen.
+
+Background:
+- Dark navy gradient
+- Slowly rotating low-poly Earth with India in orange
+- Low-poly landmarks appearing in sequence:
+  - Taj Mahal
+  - Eiffel Tower
+  - Statue of Liberty
+  - Big Ben
+  - Tokyo Tower
+  - Burj Khalifa
+  - Pyramids
+  - Sydney Opera House
+  - Merlion
+  - South Indian temple gopuram inspired by Meenakshi Amman and Brihadeeswarar Temple
+
+All landmarks must be built from simple primitives only.
+
+Vehicles:
+- Aeroplane on a curved arc
+- Car on a faint road
+- Bus on another route
+- Train along the lower part
+
+Add:
+- Glowing route lines between Chennai, Delhi, Mumbai, Kolkata, Dubai, Singapore, Paris, New York
+- Floating clouds
+- Tiny twinkling stars
+- Teal and orange aurora blobs
+- Subtle desktop mouse parallax
+- Reduced landmark/particle count on mobile
+
+Login card:
+- Max width 420px
+- Glassmorphism
+- Heading: “Welcome to TripPilot AI” / “TripPilot AI-க்கு வரவேற்கிறோம்”
+- Subheading: “Plan smarter. Travel safer.” / “ஸ்மார்ட்டாகத் திட்டமிடுங்கள். பாதுகாப்பாகப் பயணியுங்கள்.”
+- Language selector on the card
+
+Google sign-in:
+- White glass button with Google G logo
+- Label: “Continue with Google” / “Google மூலம் தொடரவும்”
+- If GOOGLE_CLIENT_ID is configured, use Google Identity Services and decode the credential.
+- Otherwise, run a realistic mock Google sign-in with a demo user.
+- Show: “Demo Google sign-in — OAuth not configured.”
+- On success, save name, email, photo, and login method.
+- Show “Welcome, {name}” / “வணக்கம், {name}”
+- Show profile photo in top navigation.
+
+Phone login:
+- “Continue with Phone” / “தொலைபேசி எண் மூலம் தொடரவும்”
+- Step 1:
+  - Full name required
+  - Indian 10-digit phone starting with 6–9
+  - Format as +91 XXXXX XXXXX
+  - Optional email
+  - Green tick for valid fields
+  - Red error for invalid fields
+  - “Send OTP” / “OTP அனுப்பு” enabled only when valid
+- Step 2:
+  - Six OTP boxes
+  - Auto-focus
+  - Paste support
+  - Backspace navigation
+  - Demo OTP: 123456
+  - Auto-fill demo OTP
+  - “Verify & Continue” / “சரிபார்த்து தொடரவும்”
+
+On successful login:
+- Animated green tick circle using SVG stroke draw
+- Confetti burst
+- Small plane flying across the screen
+- Save user to Zustand + localStorage
+- Smooth Framer Motion transition into the app
+
+Logout must clear session and return to Login.
+
+==================================================
+8. ANIMATED BACKGROUND SYSTEM
+==================================================
+
+Create `<AnimatedBackground variant intensity darkMode />`.
+
+Variants:
+- login
+- splash
+- home
+- planner
+- package
+- verification
+- companion
+- replanning
+- dossier
+- safety
+- offline
+
+Light mode:
+- #F5F8FC base
+- Soft blue-white diagonal gradient shifting over 20–30 seconds
+- Light orange glow
+- 4–6 drifting translucent clouds
+- Orange and teal particles
+- Faint light rays
+- Small plane drifting across the hero over 25–40 seconds
+- Faint dotted trail
+- Animated SVG route lines
+
+Dark mode:
+- #071427 to #0B1F3A gradient
+- Teal, orange, and blue aurora blobs
+- Twinkling stars
+- Faint world-map latitude/longitude grid
+- Animated flight-route lines
+- Slow plane silhouette
+
+Page-specific backgrounds:
+- Home: clouds, plane, routes, rotating globe
+- Planner: calm gradient, dotted route, floating pins, faint wireframe compass
+- Package: gold-orange light streaks, floating low-poly suitcase, shine sweep every 8–12 seconds
+- Verification: clean minimal design, green success glow, confetti after payment
+- Companion: telemetry grid, radar pulse, weather icons, wireframe location pin
+- Replanning: rain streaks/dark clouds for weather, red warning glow for blocked roads, amber pulse for delays, teal calm glow after success
+- Dossier: paper texture, document grid, stamp/seal animation
+- Safety: red radar ripple, shield wireframe, SOS focus
+- Offline: minimal calm design
+
+Performance rules:
+- Animate only transform and opacity.
+- 30–60 particles on desktop, 10–20 on mobile.
+- Disable heavy 3D and parallax when:
+  - Reduce animations is enabled
+  - navigator.hardwareConcurrency <= 4
+  - deviceMemory <= 2
+  - Battery Saver is likely active
+  - Map or camera is active
+- All decorative layers must be pointer-events: none.
+- Add overlay gradients behind text/forms to preserve AA contrast.
+- No flashing.
+
+==================================================
+9. HOME SCREEN
+==================================================
+
+Hero:
+- Left: smart search bar with microphone
+- Right: slowly rotating low-poly globe
+- India highlighted orange
+- Faint route arcs
+- Soft orange point light
+- Pause globe rotation while user interacts with forms/maps
+- Floating clouds and drifting plane with parallax
+- Staggered fade-up cards, 60–120ms stagger
+
+Smart search:
+- User can type or speak:
+  “3 day trip to Ooty under 15000”
+- Use Web Speech API for voice input.
+- Show animated sound-wave bars while listening.
+- Gemini parses input into:
+  {
+    destination,
+    days,
+    budget,
+    travelers,
+    tripMode,
+    interests,
+    from
+  }
+- Fill the Planner with parsed values.
+- Support English and Tamil input.
+- Add popular destination chips.
+- Save recent searches in localStorage.
+- Add “Near me” suggestions using geolocation and haversine distance.
+- Autocomplete across English and Tamil destination names.
+
+Trip mode selector:
+12 horizontally scrollable pills with icon, English + Tamil label, staggered entrance, and glowing orange border when active:
+
+1. Family Trip — குடும்ப பயணம்
+2. Adventure — சாஹச பயணம்
+3. Solo Ride — தனி பயணம்
+4. Friends Trip — நண்பர்களுடன் பயணம்
+5. Honeymoon — தேனிலவு பயணம்
+6. Pilgrimage — புனித யாத்திரை
+7. Food Tour — உணவு சுற்றுலா
+8. Nature Escape — இயற்கை பயணம்
+9. Bike Trip — பைக் பயணம்
+10. Weekend Getaway — வார இறுதி சுற்றுலா
+11. Budget Trip — சிக்கன பயணம்
+12. Luxury Trip — ஆடம்பர பயணம்
+
+Each mode must change:
+- Destination suggestions
+- Itinerary style
+- Hotels
+- Activities
+- Safety tips
+- Packing list
+
+“AI Suggest” button:
+- Label: “AI Suggest” / “AI பரிந்துரை”
+- Gemini returns 3 destination ideas based on trip mode, budget, duration, and season.
+- Show destination cards with:
+  - Gradient image placeholder
+  - English name
+  - Tamil name
+  - Why it suits the user
+  - Estimated cost
+  - Best time to visit
+- Show skeleton loaders while waiting.
+
+Tabs:
+- Flights
+- Trains
+- Buses
+- Hotels
+- Packages
+- AI Trip Planner
+
+Each tab must have realistic mock search and results.
+
+Flights:
+- Airline
+- Departure/arrival times
+- Price
+- Duration
+
+Trains:
+- Train name and number
+- Class
+- Availability
+- Example: 12671 Nilgiri Express
+
+Buses:
+- Operator
+- Bus type
+- Seat availability
+- Price
+
+Hotels:
+- Rating
+- Price
+- Amenities
+- Location
+
+Packages:
+- Price
+- Inclusions
+- Cancellation policy
+
+Tab icons:
+- Small rotating low-poly 3D models on hover: plane, train, bus, hotel, suitcase.
+- Use lazy-loaded R3F canvases.
+- Use CSS rotation fallback on mobile.
+
+Trains tab:
+- Low-poly train looping along a track.
+
+Hotels tab:
+- Slowly rotating low-poly hotel building.
+
+Offers:
+- Show date-based festival banners using today’s date.
+- Support Diwali, Pongal, Independence Day, Republic Day, Christmas, and New Year.
+- Show nearest upcoming festival first.
+- Include offer code and discount.
+
+Header:
+- LanguageSelector
+- NotificationBell with badge pop-in and shake on new alert
+- ThemeToggle
+- Profile menu with Settings and Logout
+- “Start Demo Trip” button that calls loadDemoTrip()
+
+Mobile:
+- Bottom navigation.
+Desktop:
+- Top navigation.
+
+==================================================
+10. DESTINATION DATABASE
+==================================================
+
+Create a typed `destinations.ts`.
+
+Each destination record:
+- id
+- nameEn
+- nameTa
+- regionType: global | india | tamilnadu
+- stateOrCountry
+- descEn
+- descTa
+- bestSeason
+- budgetLevel: low | medium | high | luxury
+- activities[]
+- nearby[]
+- safetyLevel: 1–5
+- tripModes[]
+- lat
+- lng
+
+Global destinations, 15:
+Dubai, Singapore, Bali, Bangkok, Kuala Lumpur, Maldives, Kathmandu, Colombo, London, Paris, Tokyo, Sydney, New York, Istanbul, Zurich.
+
+India destinations, 28:
+Chennai, Coimbatore, Madurai, Trichy, Salem, Erode, Thanjavur, Rameswaram, Kanyakumari, Kodaikanal, Ooty, Yercaud, Valparai, Munnar, Wayanad, Coorg, Goa, Manali, Leh-Ladakh, Jaipur, Udaipur, Varanasi, Rishikesh, Andaman Islands, Kerala Backwaters, Darjeeling, Shillong, Meghalaya.
+
+Also include:
+- Tirupati
+- Varkala
+
+Tamil Nadu destinations, 20:
+Chennai, Mahabalipuram, Pondicherry, Chettinad, Thanjavur, Madurai, Rameswaram, Kanyakumari, Kodaikanal, Ooty, Coonoor, Valparai, Yercaud, Kolli Hills, Courtallam, Hogenakkal, Dhanushkodi, Vandalur Zoo, Guindy National Park, Cholamandalam Artists’ Village.
+
+Deduplicate overlapping destinations by id.
+
+Use correct Tamil names:
+- Ooty → ஊட்டி
+- Kodaikanal → கொடைக்கானல்
+- Madurai → மதுரை
+- Rameswaram → இராமேஸ்வரம்
+- Kanyakumari → கன்னியாகுமரி
+- Valparai → வால்பாறை
+
+Destination cards must show:
+- English + Tamil name
+- Country/state
+- Short description
+- Budget level
+- Trip-mode suitability badges
+
+==================================================
+11. TRIP MODE RULES
+==================================================
+
+Create `tripModeRules.ts`.
+
+Family:
+- Safe sightseeing
+- Parks
+- Temples
+- Beaches
+- Zoos
+- Child/elder-friendly tips
+- No extreme sports by default
+
+Adventure:
+- Trekking
+- Camping
+- Rafting
+- Paragliding
+- Scuba
+- Bike routes
+- Difficulty level
+- Required gear
+- Weather warnings
+- Emergency contacts
+- Adventure Safety Checklist
+
+Solo Ride:
+- Safe routes
+- Hostels
+- Bike rentals
+- Solo-friendly cafes
+- Stronger safety defaults:
+  - Live-sharing prompt
+  - SOS
+  - Trusted contacts
+  - “Are you safe?” check-ins
+  - Night travel warnings
+- Scenic routes:
+  - Chennai → Pondicherry
+  - Coimbatore → Valparai
+  - Bangalore → Coorg
+
+Friends:
+- Group activities
+- Nightlife
+- Beaches
+- Road trips
+- Adventure sports
+- Budget stays
+- Group expense splitter
+- Suggested destinations: Goa, Pondicherry, Varkala, Manali, Andaman
+
+Honeymoon:
+- Romantic resorts
+- Private beaches
+- Hill stations
+- Sunset points
+- Privacy
+- Luxury
+
+Pilgrimage:
+- Temples
+- Circuits
+- Darshan timings
+- Stays near temples
+- Suggested destinations: Rameswaram, Madurai, Thanjavur, Kanyakumari, Varanasi, Tirupati
+
+Food Tour:
+- Food trails
+- Chettinad chicken
+- Filter coffee
+- Madurai jigarthanda
+- Kanyakumari fish curry
+- Thanjavur meals
+
+Nature Escape:
+- Forests
+- Tea estates
+- Waterfalls
+- Wildlife
+
+Bike Trip:
+- Scenic routes
+- Fuel stops
+- Rest points
+- Weather
+- Road conditions
+- Estimated riding time
+- Route map
+
+Weekend:
+- Destinations within 100–300 km
+- Quick 2-day itineraries
+
+Budget:
+- Sort by low cost
+- Hostels
+- Public transport
+- Street food
+
+Luxury:
+- 5-star hotels
+- Private transfers
+- Fine dining
+- Premium experiences
+
+Personalization:
+- Ask or infer:
+  - Travelers
+  - Duration
+  - Budget
+  - Start city
+  - Date
+  - Pace: relaxed | balanced | packed
+
+Generate:
+- Day-wise itinerary
+- Places
+- Food
+- Stay options
+- Transport
+- Cost estimate
+- Packing list
+- Safety tips
+- Local phrases
+- Weather warnings
+
+Example:
+Valparai + Solo Ride + 2 days + low budget should generate:
+- Scenic bike route from Coimbatore
+- Hairpin-bend warning: 40 hairpins on the ghat road
+- Sunrise/viewpoint stops
+- Budget homestays
+- Local food
+- Rain/fog alerts
+- Emergency contacts
+- Tamil voice support
+
+==================================================
+12. SIX-STEP GUIDED FLOW
+==================================================
+
+Create a vertical full-screen slideshow with six 100dvh slides:
+
+1. Planner
+2. Package
+3. Verification
+4. Companion
+5. Replanning
+6. Dossier
+
+Use Framer Motion AnimatePresence:
+- Next slide enters from bottom.
+- Previous slide exits upward.
+- Direction-aware transitions.
+- For reduced motion, use a scroll-snap fallback.
+
+Right-side vertical progress indicator:
+- Dots + labels on desktop
+- Collapse to dots on mobile
+- Active step: orange
+- Completed step: teal check
+- Locked step: lock icon + tooltip “Complete the previous step first”
+
+Mobile:
+- Compact top stepper.
+
+Navigation:
+- Mouse wheel with approximately 700ms debounce lock
+- Touch swipe up/down with onPanEnd threshold
+- Arrow keys
+- Forward navigation allowed only when previous step is complete
+- Backward navigation always allowed for completed steps
+- Do not hijack wheel/scroll inside:
+  - Scrollable children
+  - Maps
+  - Textareas
+  - Assistant drawer
+
+All data must live in Zustand.
+
+Demo mode preloads Chennai → Ooty.
+
+==================================================
+13. SLIDE 1 — PLANNER
+==================================================
+
+Fields:
+- From
+- Destination with autocomplete
+- Start date
+- End date
+- Travelers
+- Budget in ₹
+- Travel style: relax, adventure, family, budget
+- Interests as chips
+- Transport preference
+- Stay preference
+- Pace
+- Trip mode
+
+Validation:
+- Real-time
+- Green ticks for valid fields
+- Clear error messages for invalid fields
+
+AI autofill:
+- “Auto-fill with AI” button
+- Microphone input
+- User can type or say:
+  “3 day Ooty trip from Chennai under 15000”
+- Gemini returns trip fields.
+- Each field fills one by one with a typing animation.
+- Typing speed: 35ms per character.
+
+Demo mode autofill:
+- From: Chennai
+- Destination: Ooty
+- Start date: next Friday
+- End date: start date + 2 days
+- Travelers: 2
+- Budget: ₹15,000
+- Transport: Train + Road
+- Interests: Nature, tea estates, viewpoints, local food
+- Stay: Budget hotel/homestay
+
+Gemini function: generateTripPlan
+
+Prompt example:
+“Plan a 3 day Chennai to Ooty trip under Rs 15,000 for 2 travelers interested in nature, tea estates, viewpoints and local food. Respond in {language}.”
+
+Return JSON:
+{
+  "tripDetails": {},
+  "days": [
+    {
+      "day": 1,
+      "title": "",
+      "activities": [
+        {
+          "time": "",
+          "title": "",
+          "location": "",
+          "lat": 0,
+          "lng": 0,
+          "type": "",
+          "estCost": 0,
+          "notes": ""
+        }
+      ],
+      "route": "",
+      "dayTotal": 0
+    }
+  ],
+  "estimatedTotal": 0,
+  "safetyTips": [],
+  "weatherNotes": []
+}
+
+The estimated total must not exceed the budget.
+
+Fallback hardcoded Ooty plan:
+- Day 1:
+  - Nilgiri Express from Chennai Central to Mettupalayam
+  - Toy train/road to Ooty
+  - Government Botanical Garden
+  - Ooty Lake sunset
+- Day 2:
+  - Doddabetta Peak
+  - Pykara Lake/Tea Factory
+  - Tea estate walk
+  - Emerald Lake
+- Day 3:
+  - Coonoor Sim’s Park
+  - Dolphin’s Nose
+  - Return journey
+
+Itinerary preview:
+- Editable
+- Skeleton shimmer while loading
+
+When all required fields are valid:
+- Show glowing “Finish” button at the bottom.
+- Button is hidden until validation passes.
+- On click, show “Finding best packages...” loader.
+- Save data.
+- Mark Planner complete.
+- Move to Package slide.
+
+==================================================
+14. SLIDE 2 — PACKAGE
+==================================================
+
+Show four package cards:
+
+1. Budget
+2. Standard
+3. Premium
+4. Family
+
+Each card must include:
+- Price
+- Transport
+- Hotel
+- Meals
+- Activities
+- Cancellation policy
+- Suitability
+- Features
+
+For a ₹15,000 planner budget:
+- Budget: ₹9,800
+- Standard: ₹12,400
+- Premium: ₹16,900
+- Family: ₹14,600
+
+For other budgets, scale prices using a deterministic function.
+
+Gemini function: recommendPackage
+
+Gemini marks one package as “Best for you” with a reason.
+
+Fallback:
+- Standard package is recommended.
+
+Selection behavior:
+- Only one package selectable.
+- Selected card gets orange border glow.
+- Animated check badge appears.
+- Slight scale-up.
+- Price summary updates using AnimatedCounter.
+- Premium above budget shows amber note:
+  “Over budget by ₹X”
+
+On selection:
+- “Finish” button pops up with slide-up + spring animation.
+- On click, save package.
+- Move to Verification slide.
+
+Background:
+- Gold-orange streaks
+- Floating suitcase
+- Shine sweep
+
+==================================================
+15. SLIDE 3 — VERIFICATION
+==================================================
+
+Left panel:
+- Trip summary
+- Selected package
+- Price breakdown:
+  - Base price
+  - Taxes: 5% GST
+  - Festival discount if applicable
+  - Total
+
+Right panel:
+- One TravelerForm block per traveler.
+
+Traveler fields:
+- Full name
+- Age
+- Gender
+- Phone with OTP simulation
+- Email
+- ID type: Aadhaar, Passport, Driving Licence
+- ID number
+- Emergency contact, optional
+- Health/allergy note, optional
+
+Validation:
+- Aadhaar: 12 digits
+- Passport: valid format
+- Driving Licence: valid format
+- Phone: 10 digits
+- Email: valid regex
+- Age: 1–100
+- Mask ID after entry, for example: XXXX XXXX 1234
+
+Auto-fill first traveler with demo data.
+
+Mock payment selector:
+- UPI
+- Card
+- Net banking
+
+Validation:
+- UPI ID format
+- Card number using Luhn check
+
+Terms checkbox required.
+
+When all fields are valid:
+- “Confirm Booking” button appears and activates.
+
+On Confirm:
+- Show “Processing payment...” for 2 seconds.
+- Show full-screen BOOKING SUCCESS.
+- Green circle draws itself with animated SVG check using pathLength.
+- Confetti in navy, orange, and teal.
+- Plane flies across screen with trail.
+- Text:
+  “Your trip is successfully booked!”
+  “பதிவு வெற்றிகரமாக முடிந்தது”
+- Generate booking ID:
+  TP-2026-XXXXX
+  where XXXXX is five random digits.
+- Show destination and dates with count-up animation.
+- Buttons:
+  - “View Trip Dossier”
+  - “Continue”
+- Push notification:
+  “Booking confirmed” + trip summary.
+- “Continue” unlocks remaining slides and moves to Companion.
+
+==================================================
+16. SLIDE 4 — COMPANION
+==================================================
+
+Create a live travel dashboard using glass cards.
+
+Include:
+
+1. Today’s itinerary timeline
+- Completed activities
+- Current activity with moving orange glow border
+- Upcoming activities
+
+2. Start Trip / Finish Trip
+- “Start Trip” triggers Trip Started animation.
+- “Finish Trip” triggers Trip Finished animation.
+
+3. Live Location Tracker
+- First show a friendly permission-explanation screen.
+- Use:
+  navigator.geolocation.watchPosition(
+    ...,
+    { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
+  )
+- Handle:
+  - PERMISSION_DENIED
+  - POSITION_UNAVAILABLE, GPS off
+  - TIMEOUT
+  - Low accuracy greater than 100m
+- Show notification:
+  “Low GPS accuracy”
+- Use Google Maps JS API if key exists.
+- Otherwise use Leaflet + OpenStreetMap through one MapView component with provider switching.
+- Show:
+  - Pulsing blue dot
+  - Breathing accuracy circle
+  - Travelled-path polyline
+  - Reverse-geocoded address
+  - Latitude
+  - Longitude
+  - Speed in km/h
+  - Accuracy
+  - Last updated
+  - Battery if Battery Status API is available
+- Clear watchPosition on unmount.
+- If geolocation unavailable, show a clearly labeled simulated movement demo along the Chennai → Ooty route.
+
+4. Live Location Sharing
+- “Start Sharing Live Location” creates a unique ID and `/track/{id}` link.
+- If Firebase is configured, push updates every 5–10 seconds to Firebase Realtime Database.
+- Otherwise use localStorage + BroadcastChannel mock mode with a visible note.
+- Sharing duration options:
+  - 15 minutes
+  - 1 hour
+  - Until trip ends
+- “Stop Sharing” and auto-expire must delete shared data.
+- Banner:
+  “Live sharing is ON”
+- Show who can see it and when it expires.
+- Buttons:
+  - Copy link
+  - Open in Google Maps
+  - WhatsApp
+  - SMS
+  - Native Web Share API
+- WhatsApp link:
+  https://wa.me/?text={encoded message}
+- SMS link:
+  sms:?&body={encoded message}
+- Message:
+  “I am here: {maps link}. Time: {time}. Sent from TripPilot AI.”
+
+5. Live Safety Mode
+- Red SOS button with expanding ripple and shield with pulsing red ring.
+- On SOS:
+  - Capture location link.
+  - Prepare WhatsApp/SMS links for every trusted contact.
+  - Show nearest hospital and police station using haversine distance over mock data.
+  - Start live sharing.
+  - Add notifications.
+- Trusted contacts:
+  - Add/edit/remove up to 5
+  - Stored in localStorage
+- Alerts:
+  - “Journey started”
+  - “Reached destination”
+  - “Stopped for too long: Are you safe?”
+  - Movement under 20m for N minutes triggers a 60-second countdown.
+  - If unanswered, trigger SOS.
+- Never track in background without consent.
+- Clearly show:
+  - What is shared
+  - With whom
+  - For how long
+  - How to stop sharing
+
+6. Smart Road Risk Detection
+- Calculate Low/Medium/High risk using:
+  - Weather
+  - Accident-prone zones
+  - Night travel
+  - Traffic
+  - Ghat/hill-road factor
+- Example risky zones:
+  - Kallar–Coonoor ghat
+  - Burliar hairpins
+- Show green/amber/red risk score.
+- Suggest safer alternatives:
+  - Mettupalayam–Coonoor route
+  - Kotagiri route
+  - Daytime departure
+- Show a 3D low-poly car driving a winding hill road.
+- Road glows green, amber, or red based on risk.
+
+7. Destination Condition Intelligence
+- Weather
+- Temperature
+- Crowd level
+- Closures
+- Festival rush
+- Safety score
+- Gemini traveler advisory using getDestinationAdvisory
+
+8. Alternative Destination Finder
+- If crowded, unsafe, or over budget, suggest 3 alternatives.
+- Example:
+  Ooty → Coonoor, Kotagiri, Yercaud
+
+9. Budget Tracker + Optimizer
+- Add expenses:
+  - Category
+  - Amount
+  - Note
+- Animated progress ring.
+- Ring turns orange near budget limit and red when exceeded.
+- Category breakdown.
+- Over-budget alert:
+  “You exceeded the budget by ₹X”
+- Gemini cheaper alternatives using getBudgetOptimizerAdvice.
+- Group expense splitter for Friends mode.
+
+10. Voice Assistant
+- Web Speech API SpeechRecognition
+- Gemini
+- speechSynthesis
+- English and Tamil, ta-IN
+- Animated sound-wave bars
+- Friendly message if unsupported
+
+11. Voice Translator
+- Languages:
+  - English
+  - Tamil
+  - Hindi
+  - Telugu
+  - Malayalam
+- Speak input
+- Show text translation
+- Speak translation aloud
+- Common travel phrase chips
+- Gemini function: translatePhrase
+
+12. Offline Emergency Assistant
+- Cached emergency numbers:
+  - 112
+  - 100
+  - 108
+  - 101
+  - 1091 Women Helpline
+  - 1098 Child Helpline
+- First-aid guide in English and Tamil
+- Hospitals
+- Police stations
+- Saved itinerary
+- Trusted contacts
+- PWA service worker
+- Offline fallback page
+- “Offline” badge when navigator.onLine === false
+
+13. Emergency Healthcare
+- Gemini symptom-checker chat
+- Nearest hospital
+- Doctor call button using tel:
+- Permanent disclaimer:
+  “This is not a medical diagnosis.”
+  “Call 108/112 in an emergency.”
+- Never diagnose.
+
+14. Group Travel Decision AI
+- Each friend enters budget and preferences.
+- Gemini proposes one balanced plan using proposeGroupPlan.
+- Voting screen with up/down votes per option.
+- Live tally.
+
+15. Street-Level Navigation
+- Map with step-by-step directions.
+- Use Leaflet Routing/OSRM public demo endpoint or Google Directions if key exists.
+- Fallback to hardcoded steps.
+- Bouncing 3D location pin that follows the route.
+
+==================================================
+17. SLIDE 5 — REPLANNING
+==================================================
+
+Balance card:
+- Total budget
+- Spent
+- Remaining
+- Package price
+- Extra disruption cost
+
+Disruption selector:
+- Heavy rain
+- Train/flight delay
+- Road blocked
+- Place closed
+- Budget exceeded
+- Medical emergency
+- Traffic jam
+- Hotel issue
+
+On selection:
+- Show affected day
+- Affected activity
+- Cost impact
+- Risk level
+- Send itinerary, disruption, balance, and preferences to Gemini using replanItinerary.
+- Show “Replanning...” loader.
+- Old itinerary cards slide out.
+- New itinerary cards slide in.
+
+Before vs after comparison:
+- Original plan
+- Revised plan
+- Reason
+- Extra cost
+- New balance
+- Safety impact
+
+3D visuals:
+- Rain cloud with falling rain for weather disruption.
+- Sun with rotating rays after successful replan.
+
+Buttons:
+- Accept new plan
+  - Writes to itinerary
+  - Adds to replanningHistory
+- Compare again
+- Simulate another disruption
+- Notify companions via WhatsApp/SMS links
+
+Notifications:
+- “Disruption detected”
+- “Itinerary replanned”
+- “Budget impact: ₹X”
+- “Live sharing started”
+- “Location shared with {contact}”
+- “Low GPS accuracy”
+- “Sharing stopped”
+
+==================================================
+18. SLIDE 6 — DOSSIER
+==================================================
+
+Show:
+
+- Booking ID
+- Trip summary
+- Package
+- Travelers
+- Final itinerary
+- Replanning history
+- Expenses
+- Safety contacts
+- Emergency numbers
+- Hospitals
+- Police stations
+- Live-sharing status
+- Road-risk summary
+- Destination condition
+- Gemini checklist
+- Weather-aware packing list using generatePackingList
+- Local phrases
+- Printable/downloadable dossier
+- Trip readiness score, 0–100
+- Carbon footprint estimate
+- Feedback form
+- Trip completion screen
+
+Print/PDF:
+- Use window.print()
+- Dedicated @media print stylesheet
+- “Download PDF” button triggers print dialog
+
+Trip readiness score based on:
+- Completed steps
+- Trusted contacts
+- Offline cache
+- Documents
+
+Carbon footprint per traveler:
+- Flight: approximately 0.15 kg CO2/km
+- Car: approximately 0.17 kg CO2/km
+- Bus: approximately 0.05 kg CO2/km
+- Train: approximately 0.04 kg CO2/km
+
+Feedback:
+- Star rating
+- Comments
+
+Add stamp/seal animation near booking ID.
+
+==================================================
+19. NOTIFICATIONS
+==================================================
+
+Create a notification bell with badge count.
+
+Notification types:
+- Booking confirmed + trip summary
+- Budget alert, amount exceeded
+- Traffic alert, heavy traffic or route unavailable
+- Trip started
+- Trip completed, thank-you, feedback request, total expense summary
+- Live sharing started/stopped
+- Location shared with contact
+- Low GPS accuracy
+- Disruption detected
+- Itinerary replanned
+
+Bell behavior:
+- Badge pop-in
+- Shake on new alert
+- Panel with mark-all-read
+
+==================================================
+20. TRIP START AND FINISH ANIMATIONS
+==================================================
+
+Trip Started:
+Triggered by:
+- “Start Trip” click
+- First itinerary activity reached
+- Live sharing begins
+
+Full-screen dark-navy glass overlay:
+- Low-poly vehicle based on travel mode:
+  - Flight: aeroplane takes off
+  - Train: train moves forward
+  - Bus: bus drives
+  - Road: car drives
+- Animated route line from Chennai to Ooty or selected destination
+- Moving location pin along route
+- Staggered fade-up text:
+  “Your trip has started!”
+  “உங்கள் பயணம் தொடங்கியது!”
+- Details:
+  - Destination
+  - Start date
+  - Travelers
+  - Package
+  - Estimated duration
+- Green “Trip Started” badge with pulsing teal glow
+- Confetti burst
+- Soft orange glow
+- Push notification
+- Auto-dismiss or Continue button
+
+Trip Successfully Finished:
+Triggered by:
+- “Finish Trip”
+- Reaching destination/end date
+
+Overlay:
+- Arrival animation
+- Vehicle arrives
+- Flag/pin lands
+- Summary:
+  - Total distance
+  - Days
+  - Spent vs budget
+  - Saved/exceeded amount
+  - Expenses by category
+- Feedback request:
+  - Stars
+  - Comment
+- “View Dossier” button
+- Confetti
+- Push “Trip completed” notification
+- Set tripStatus = finished
+
+==================================================
+21. GEMINI AI ASSISTANT
+==================================================
+
+Create a persistent AI assistant on every page.
+
+Floating button:
+- Bottom-right
+- Orange gradient circular button
+- Bot/sparkles icon
+- Subtle pulse
+- Tooltip:
+  “Ask TripPilot AI” / “TripPilot AI-ஐ கேளுங்கள்”
+- Small red dot for unread trip alerts
+- Framer Motion entrance
+
+Desktop:
+- Glass sidebar drawer sliding in from right.
+
+Mobile:
+- Full-screen bottom sheet with drag-to-close.
+
+Header:
+- “TripPilot AI Assistant”
+- Subtitle:
+  “Your smart travel companion”
+  “உங்கள் ஸ்மார்ட் பயணத் துணை”
+- Close
+- Clear chat
+- Mic input
+- Speaker/voice-output toggle
+- Dark/light aware
+- Does not block app content
+- Focus-trapped
+- Esc closes
+
+Chat bubbles:
+- User: right, orange gradient
+- AI: left, glass card
+- Typing indicator with animated dots
+- Markdown support: headings, bullets, bold, tables, links
+- Auto-scroll
+- Quick-reply chips after each AI reply
+
+Quick actions:
+- Plan a trip — பயணம் திட்டமிடு
+- Replan my trip — பயணத்தை மறுதிட்டமிடு
+- Check route safety — பாதை பாதுகாப்பைச் சரிபார்
+- Find cheap hotels — மலிவான விடுதிகளைக் கண்டறி
+- Nearby hospital — அருகிலுள்ள மருத்துவமனை
+- Translate a phrase — மொழிபெயர்
+- My budget — என் பட்ஜெட்
+- Start SOS — SOS தொடங்கு
+
+Gemini function: sendAssistantMessage
+
+Send context:
+- Current page
+- Destination
+- Trip mode
+- Dates
+- Travelers
+- Budget
+- Package
+- Itinerary
+- Expenses
+- Remaining balance
+- Road risk
+- Weather/destination condition
+- Live-sharing status
+- Language
+- Recent notifications
+
+Return JSON:
+{
+  "reply": "markdown string",
+  "actions": [
+    {
+      "type": "navigate | applyReplan | startSharing | startSOS | openPage",
+      "payload": {}
+    }
+  ],
+  "quickReplies": []
+}
+
+Assistant capabilities:
+- Trip planning
+- Itinerary edits
+- Replanning
+- Destination information
+- Weather
+- Best time
+- Crowd
+- Food
+- Transport
+- Safety
+- Festival rush
+- Entry fees
+- Budget help
+- Nearest hospital/police from mock data
+- Translation, text and spoken
+- Voice conversation
+- Replies in selected language
+
+Proactive suggestion banners:
+- Budget exceeded:
+  “You have exceeded your budget by ₹1,250. Want me to suggest cheaper stays?”
+  “உங்கள் பட்ஜெட் ₹1,250 அதிகமாக உள்ளது. மலிவான தங்கும் இடங்களைப் பரிந்துரைக்கவா?”
+
+- Rain detected:
+  “Heavy rain expected in Ooty. Should I replan outdoor activities?”
+  “ஊட்டியில் கனமழை எதிர்பார்க்கப்படுகிறது. வெளிப்புற நடவடிக்கைகளை மறுதிட்டமிடவா?”
+
+- High road risk:
+  “Your route has high risk due to ghat roads and night travel. Want safer alternatives?”
+  “மலைவழிப் பாதை மற்றும் இரவுப் பயணம் காரணமாக உங்கள் பாதை அதிக ஆபத்தில் உள்ளது. பாதுகாப்பான மாற்று வழிகளைப் பார்க்கவா?”
+
+- Sharing off:
+  “Enable live location sharing for safer solo travel?”
+  “பாதுகாப்பான தனி பயணத்திற்கு நேரலை இருப்பிடப் பகிர்வை இயக்கவா?”
+
+Safety rules:
+- Never provide medical diagnosis.
+- Always show emergency disclaimer for medical questions.
+- Always advise calling 108/112 in an emergency.
+- Never share location without explicit consent.
+- State who can see location and when it expires.
+- Keep chat history only in session memory.
+
+If Gemini fails or API key is missing:
+- Friendly fallback response.
+- Prebuilt offline answers for common questions.
+- “Offline mode” badge.
+
+==================================================
+22. GEMINI SERVICE LAYER
+==================================================
+
+Create `services/gemini.ts`.
+
+Export these typed functions:
+
+- generateTripPlan
+- parseSearchQuery
+- suggestDestinations
+- recommendPackage
+- replanItinerary
+- getDestinationAdvisory
+- getRoadRiskAdvice
+- getBudgetOptimizerAdvice
+- proposeGroupPlan
+- symptomCheck
+- translatePhrase
+- generatePackingList
+- sendAssistantMessage
+
+Each function must have:
+- Typed request/response
+- JSON response schema
+- Safe JSON parsing
+- Runtime validation
+- 8-second timeout
+- One retry
+- Mock fallback
+- No API-key logging
+
+Keep Gemini prompts in `services/prompts.ts`.
+Keep fallback data in `services/mockData.ts`.
+
+==================================================
+23. PERFORMANCE
+==================================================
+
+- Lazy-load pages and 3D.
+- Cap DPR at 2.
+- Use simple materials.
+- Use frameloop="demand" for static canvases.
+- Dispose geometries on unmount.
+- Use lighter 3D or CSS animation on mobile/low-end devices.
+- Pause 3D when tab hidden or map/camera active.
+- Memoize heavy lists.
+- Avoid layout-thrashing animations.
+- Animate only transform and opacity where possible.
+
+==================================================
+24. REQUIRED FILE STRUCTURE
+==================================================
+
+Create a clean scalable structure similar to:
+
+src/
+  main.tsx
+  App.tsx
+  index.css
+  config/env.ts
+  components/
+    ui/
+    layout/
+    maps/
+    three/
+    assistant/
+    safety/
+  pages/
+    Splash.tsx
+    Login.tsx
+    Home.tsx
+    Planner.tsx
+    Package.tsx
+    Verification.tsx
+    Companion.tsx
+    Replanning.tsx
+    Dossier.tsx
+    TrackViewer.tsx
+  store/
+    useTripStore.ts
+  services/
+    gemini.ts
+    prompts.ts
+    mockData.ts
+    location.ts
+    safety.ts
+  data/
+    destinations.ts
+    tripModeRules.ts
+    festivals.ts
+    emergency.ts
+  i18n/
+    index.ts
+    en.ts
+    ta.ts
+    hi.ts
+    te.ts
+    ml.ts
+  hooks/
+  utils/
+public/
+  manifest.webmanifest
+  sw.js
+  offline.html
+
+==================================================
+25. OUTPUT REQUIREMENTS
+==================================================
+
+Print the complete folder structure.
+
+Output every file in full:
+- package.json
+- vite.config.ts
+- tsconfig files
+- tailwind.config
+- postcss config
+- index.html with font links
+- manifest
+- service

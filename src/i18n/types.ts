@@ -1,0 +1,153 @@
+export type LanguageCode = 'en' | 'ta' | 'hi' | 'te' | 'ml';
+
+export interface Translations {
+  appName: string;
+  tagline: string;
+  skip: string;
+  planTrip: string;
+  whereTo: string;
+  searchPlaceholder: string;
+  chooseTripStyle: string;
+  startDemoTrip: string;
+  aiSuggest: string;
+  aiSuggestDesc: string;
+  continueWithGoogle: string;
+  continueWithPhone: string;
+  demoGoogleNote: string;
+  welcome: string;
+  phoneLabel: string;
+  nameLabel: string;
+  emailLabel: string;
+  sendOtp: string;
+  verifyAndContinue: string;
+  demoOtpNote: string;
+  tabs: {
+    flights: string;
+    trains: string;
+    buses: string;
+    hotels: string;
+    packages: string;
+    aiPlanner: string;
+  };
+  steps: {
+    planner: string;
+    package: string;
+    verification: string;
+    companion: string;
+    replanning: string;
+    dossier: string;
+  };
+  planner: {
+    title: string;
+    from: string;
+    destination: string;
+    startDate: string;
+    endDate: string;
+    travelers: string;
+    budget: string;
+    travelStyle: string;
+    interests: string;
+    transport: string;
+    stay: string;
+    pace: string;
+    autofillWithAi: string;
+    finishAndSelectPackage: string;
+    generating: string;
+  };
+  package: {
+    title: string;
+    subtitle: string;
+    bestForYou: string;
+    overBudget: string;
+    finishToVerification: string;
+  };
+  verification: {
+    title: string;
+    travelerDetails: string;
+    idType: string;
+    idNumber: string;
+    emergencyContact: string;
+    healthNotes: string;
+    paymentMethod: string;
+    upi: string;
+    card: string;
+    netbanking: string;
+    termsAccept: string;
+    confirmBooking: string;
+    bookingSuccess: string;
+    viewDossier: string;
+    continueToCompanion: string;
+  };
+  companion: {
+    title: string;
+    liveLocation: string;
+    startTrip: string;
+    finishTrip: string;
+    tripStarted: string;
+    tripFinished: string;
+    liveSharingOn: string;
+    startSharing: string;
+    stopSharing: string;
+    sos: string;
+    areYouSafe: string;
+    nearestHospital: string;
+    nearestPolice: string;
+    roadRisk: string;
+    budgetStatus: string;
+    voiceAssistant: string;
+    translator: string;
+    offlineEmergency: string;
+    groupTravelDecision: string;
+  };
+  replanning: {
+    title: string;
+    selectDisruption: string;
+    replanButton: string;
+    acceptNewPlan: string;
+    beforeVsAfter: string;
+    disruptions: {
+      rain: string;
+      delay: string;
+      roadBlocked: string;
+      closed: string;
+      budget: string;
+      medical: string;
+      traffic: string;
+      hotel: string;
+    };
+  };
+  dossier: {
+    title: string;
+    bookingId: string;
+    readinessScore: string;
+    carbonFootprint: string;
+    downloadPdf: string;
+    ratingTitle: string;
+    submitFeedback: string;
+  };
+  assistant: {
+    title: string;
+    subtitle: string;
+    askPlaceholder: string;
+    offlineMode: string;
+    demoData: string;
+  };
+  common: {
+    days: string;
+    rupees: string;
+    perPerson: string;
+    total: string;
+    finish: string;
+    next: string;
+    back: string;
+    cancel: string;
+    save: string;
+    demoDataBadge: string;
+    offlineBadge: string;
+    reduceAnimations: string;
+    darkMode: string;
+    lightMode: string;
+    logout: string;
+    settings: string;
+  };
+}

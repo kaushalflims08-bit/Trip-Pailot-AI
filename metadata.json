@@ -1,0 +1,9 @@
+{
+  "name": "TripPilot AI",
+  "description": "Intelligent travel planning, booking, live safety companion and automatic replanning app powered by Gemini.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

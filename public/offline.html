@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline Mode - TripPilot AI</title>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #071427;
+      color: #F5F8FC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      text-align: center;
+    }
+    .badge {
+      background: #FF7A1A;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin: 0 0 12px;
+    }
+    p {
+      color: #94A3B8;
+      max-width: 440px;
+      line-height: 1.6;
+    }
+    .card {
+      background: rgba(11, 31, 58, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 24px;
+      max-width: 440px;
+      text-align: left;
+    }
+    .emergency-num {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 15px;
+    }
+    .emergency-num:last-child {
+      border-bottom: none;
+    }
+    .btn {
+      margin-top: 24px;
+      background: #14B8A6;
+      color: #fff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="badge">Offline Assistant Available</div>
+  <h1>You are currently offline</h1>
+  <p>TripPilot AI has cached your emergency guide, numbers, and last saved itinerary.</p>
+  
+  <div class="card">
+    <div style="font-weight: 600; margin-bottom: 12px; color: #FF7A1A;">Emergency Numbers (India)</div>
+    <div class="emergency-num"><span>National Emergency</span><strong>112</strong></div>
+    <div class="emergency-num"><span>Police</span><strong>100</strong></div>
+    <div class="emergency-num"><span>Ambulance / Medical</span><strong>108</strong></div>
+    <div class="emergency-num"><span>Women Helpline</span><strong>1091</strong></div>
+    <div class="emergency-num"><span>Child Helpline</span><strong>1098</strong></div>
+  </div>
+
+  <button class="btn" onclick="window.location.reload()">Retry Connection</button>
+</body>
+</html>

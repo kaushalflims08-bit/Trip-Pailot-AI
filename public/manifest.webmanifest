@@ -1,0 +1,16 @@
+{
+  "name": "TripPilot AI - Smart Travel Companion",
+  "short_name": "TripPilot AI",
+  "description": "Intelligent travel planning, booking, live safety companion and automatic replanning app powered by Gemini.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071427",
+  "theme_color": "#0B1F3A",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230B1F3A'/><path d='M25 50 L45 35 L45 45 L75 45 L75 55 L45 55 L45 65 Z' fill='%23FF7A1A'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
